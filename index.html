@@ -25,6 +25,8 @@
     align-items: center;
     padding: 24px;
     overflow-x: hidden;
+    position: relative;
+    z-index: 1;
   }
 
   h1 {
@@ -161,6 +163,8 @@
     display: flex;
     gap: 14px;
     margin-top: 4px;
+    position: relative;
+    z-index: 10;
   }
 
   button {
@@ -175,6 +179,8 @@
     letter-spacing: 2px;
     box-shadow: 0 10px 24px rgba(14, 116, 144, 0.45);
     transition: 0.25s;
+    position: relative;
+    z-index: 10;
   }
 
   button:hover {
@@ -198,7 +204,7 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 9999;
+    z-index: 0;
   }
 
   .fw-particle {
@@ -248,6 +254,7 @@
 <script>
   const SYMBOLS = ['🍎', '🍊', '🍋', '🍇', '🍉', '🍓'];
   const TILE = 60;
+  const GAP = 8;
   const TRAY_MAX = 7;
 
   let tiles = [];
@@ -258,12 +265,13 @@
   const trayEl = document.getElementById('tray');
   const message = document.getElementById('message');
 
+  // 底层位置：[col, row]
   const LAYER0_POS = [
     [0, 0], [1, 0], [2, 0], [3, 0],
     [0, 1], [1, 1], [2, 1], [3, 1],
     [0, 2], [1, 2], [2, 2], [3, 2]
   ];
-
+  // 上层，叠在底层上面，偏移一点露出边缘
   const LAYER1_POS = [
     [1, 0], [2, 0],
     [0, 1], [2, 1],
@@ -284,7 +292,6 @@
     message.className = '';
 
     let idx = 0;
-
     LAYER0_POS.forEach(([c, r]) => {
       tiles.push({
         id: idx,
@@ -295,7 +302,6 @@
         removed: false
       });
     });
-
     LAYER1_POS.forEach(([c, r]) => {
       tiles.push({
         id: idx,
@@ -306,25 +312,19 @@
         removed: false
       });
     });
-
     render();
   }
 
+  // 判断是否被压住：同col、row，上层layer更高就盖住
   function isClickable(tile) {
     if (tile.removed) return false;
-
     for (let other of tiles) {
       if (other.removed) continue;
       if (other.layer <= tile.layer) continue;
-
-      if (
-        Math.abs(other.col - tile.col) <= 0.25 &&
-        Math.abs(other.row - tile.row) <= 0.25
-      ) {
+      if (other.col === tile.col && other.row === tile.row) {
         return false;
       }
     }
-
     return true;
   }
 
@@ -335,15 +335,12 @@
     tile.removed = true;
     tray.push(tile.symbol);
 
+    // 消除逻辑
     let count = {};
     tray.forEach(s => count[s] = (count[s] || 0) + 1);
-
-    let kept = {};
-    tray.forEach(s => kept[s] = (kept[s] || 0) + 1);
-
     tray = [];
-    Object.keys(kept).forEach(s => {
-      let n = kept[s];
+    Object.keys(count).forEach(s => {
+      let n = count[s];
       if (n >= 3) n -= 3;
       for (let i = 0; i < n; i++) tray.push(s);
     });
@@ -354,7 +351,6 @@
 
   function checkWinLose() {
     let remaining = tiles.filter(t => !t.removed).length;
-
     if (remaining === 0) {
       message.textContent = '🎉 YOU WIN! FIREWORKS! 🎉';
       message.className = 'win';
@@ -362,7 +358,6 @@
       startWinFireworks();
       return;
     }
-
     if (tray.length >= TRAY_MAX) {
       message.textContent = '💥 GAME OVER! Tray is full!';
       message.className = 'lose';
@@ -372,31 +367,25 @@
 
   function render() {
     board.innerHTML = '';
-
     tiles.forEach(tile => {
       const el = document.createElement('div');
       el.className = 'tile';
-
-      let offsetX = tile.layer === 1 ? 7 : 0;
-      let offsetY = tile.layer === 1 ? 7 : 0;
-
-      el.style.left = tile.col * (TILE + 8) + offsetX + 'px';
-      el.style.top = tile.row * (TILE + 8) + offsetY + 'px';
+      // 上层偏移 7px，制造叠起来的效果
+      const offsetX = tile.layer === 1 ? 7 : 0;
+      const offsetY = tile.layer === 1 ? 7 : 0;
+      el.style.left = tile.col * (TILE + GAP) + offsetX + 'px';
+      el.style.top = tile.row * (TILE + GAP) + offsetY + 'px';
       el.style.zIndex = tile.layer * 10 + tile.id;
       el.textContent = tile.symbol;
 
-      if (tile.removed) {
-        el.classList.add('removed');
-      } else if (!isClickable(tile)) {
-        el.classList.add('blocked');
-      }
+      if (tile.removed) el.classList.add('removed');
+      else if (!isClickable(tile)) el.classList.add('blocked');
 
       el.onclick = () => onTileClick(tile);
       board.appendChild(el);
     });
 
     trayEl.innerHTML = '';
-
     for (let i = 0; i < TRAY_MAX; i++) {
       const slot = document.createElement('div');
       slot.className = 'tray-slot';
@@ -405,27 +394,22 @@
     }
   }
 
-
+  // 点击小烟花
   function clickFirework(x, y) {
     const colors = ['#f472b6', '#38bdf8', '#fde047', '#a78bfa', '#4ade80'];
     const count = 18;
-
     for (let i = 0; i < count; i++) {
       const p = document.createElement('div');
       p.className = 'fw-particle';
-
       const angle = (Math.PI * 2 / count) * i;
       const dist = 60 + Math.random() * 40;
-
       p.style.left = x + 'px';
       p.style.top = y + 'px';
       p.style.background = colors[Math.floor(Math.random() * colors.length)];
       p.style.boxShadow = '0 0 10px ' + p.style.background;
       p.style.setProperty('--fw-x', Math.cos(angle) * dist + 'px');
       p.style.setProperty('--fw-y', Math.sin(angle) * dist + 'px');
-
       document.body.appendChild(p);
-
       setTimeout(() => p.remove(), 1700);
     }
   }
@@ -434,28 +418,23 @@
   function startWinFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     let particles = [];
 
     function launch() {
       const x = Math.random() * canvas.width;
       const y = Math.random() * canvas.height * 0.5 + 40;
       const color = `hsl(${Math.random() * 360}, 90%, 60%)`;
-
       for (let i = 0; i < 90; i++) {
         const angle = (Math.PI * 2 / 90) * i;
         const speed = 3 + Math.random() * 4;
-
         particles.push({
-          x: x,
-          y: y,
+          x, y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           life: 1,
-          color: color
+          color
         });
       }
     }
@@ -463,15 +442,12 @@
     function animate() {
       ctx.fillStyle = 'rgba(125, 211, 252, 0.18)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       particles = particles.filter(p => p.life > 0);
-
       particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
         p.vy += 0.04;
         p.life -= 0.012;
-
         ctx.beginPath();
         ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
@@ -479,12 +455,9 @@
         ctx.shadowColor = p.color;
         ctx.fill();
       });
-
       requestAnimationFrame(animate);
     }
-
     animate();
-
     let launches = 0;
     const timer = setInterval(() => {
       launch();
@@ -493,8 +466,10 @@
     }, 420);
   }
 
+  // 按钮绑定
   document.getElementById('resetBtn').onclick = initGame;
 
+  // 卡牌点击烟花
   board.addEventListener('click', (e) => {
     if (e.target.classList.contains('tile') && !e.target.classList.contains('removed')) {
       const rect = board.getBoundingClientRect();
@@ -503,11 +478,6 @@
   });
 
   initGame();
-</script>
-</body>
-</html>
-me;
-initGame();
 </script>
 </body>
 </html>
