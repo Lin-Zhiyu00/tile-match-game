@@ -1,40 +1,41 @@
-# Tile Match
-Assignment 3: An interactive experience
+# Fruit Tile Match
+An interactive tile-matching browser game for Assignment 3: An interactive experience.
 
-## What is this?
-Tile Match is a small tile-matching puzzle game inspired by "Sheep a Sheep".
-It is a single-page web app built with plain HTML, CSS and JavaScript — no dependencies, no installation.
-
-## Who is it for?
-Casual players who want a quick, relaxing puzzle game.
-
-## How to play
-1. The board shows stacks of tiles. Bright tiles are clickable; dim tiles are covered by tiles above them.
-2. Click a bright tile to move it to the tray at the bottom.
-3. When 3 identical tiles appear in the tray, they are cleared automatically.
-4. Clear every tile on the board to win.
-5. If the tray fills up with 7 tiles before you can match them, you lose.
-
-## Interaction loop
-User clicks a tile → the tile moves to the tray → the game checks for 3 matching symbols → matches disappear / win-lose state updates.
+## Project idea
+This is a simple relaxing matching game. It is designed for casual players who want a short, playful interactive experience.
+The core loop:
+1. Player clicks on uncovered, bright fruit tiles
+2. Selected tiles move to the bottom tray
+3. When 3 identical fruits appear in the tray, they automatically disappear
+4. The player wins when all tiles on the board are cleared
+5. The player loses if the tray fills up to 7 slots
 
 ## How to run
-Option A (easiest): open the GitHub Pages link (see repository front page).
-Option B: download `index.html` and double-click it to open in any modern browser.
+This is a single HTML file with no external dependencies.
+1. Download `fruit-tile-match.html`
+2. Double-click to open it in any modern web browser (Chrome, Edge, Safari)
+3. Click the `NEW GAME` button to restart at any time
 
-## Error handling
-- Covered tiles cannot be clicked (they appear dimmed).
-- Clicking tiles after the game ends has no effect.
-- The Reset button always starts a fresh shuffled game.
-
-## Screenshot
-<img width="959" height="502" alt="9a49b72b44c5985fdb31bc9d59ad2b0c" src="https://github.com/user-attachments/assets/cb80f9ec-e83f-4a48-9fd0-2ec17b4bd4c8" />
-
+## Controls & feedback
+- ✅ Only bright, uncovered tiles can be clicked; covered tiles are dimmed to show they are blocked
+- ✅ Visual animation when tiles are removed
+- ✅ Falling fruit decoration animation in the background
+- ✅ Firework effect + text "YOU WIN!" when all tiles are cleared
+- ✅ "GAME OVER" message when the tray is full
+- ✅ `NEW GAME` button resets the whole board
 
 ## Known limitations
-- Only 6 tile types and 18 tiles per round.
-- No timer, no score, no undo.
-- No sound effects.
+- Fixed single level only (no progressive level system)
+- Background falling fruits are decorative and cannot be interacted with
+- No sound effects
 
 ## Credits
-All code written for this assignment. Tile symbols are standard emoji from the system font.
+- Tile emoji assets: standard Unicode fruit emojis
+- Base interaction logic developed for this assignment
+- AI assistant helped refine layout, animations, bug fixes and documentation
+
+## Screenshot
+![Game screenshot](screenshot.jpg)
+
+## Live Demo (Optional)
+If deployed with GitHub Pages, paste your link here.
