@@ -1,36 +1,30 @@
-# Development Process
+# Process documentation | Assignment 3
 
-## Initial idea
-I wanted to make a small browser game inspired by "Sheep a Sheep" (the viral tile-matching game). The core idea: a board of stacked tiles, the player clicks uncovered tiles to move them into a tray, and 3 matching tiles clear automatically.
+## Starting idea
+I wanted to build a simple tile-match elimination game running in the browser.
+The planned interaction loop: click tiles → send them to a tray → match three fruits to clear them, win by clearing the whole board.
+My initial prototype had a small number of fruit tiles on the board.
 
-## Why this idea
-- The interaction loop is very clear: click → tile moves → match check → feedback.
-- The layered stacking naturally creates a meaningful "blocked" state that the player must understand.
-- The game has a built-in error state (tray full) that matches the assignment requirement.
-- Emoji tiles mean no external image assets are needed.
+## Design & code changes
+1. **First change: increase tile quantity**
+When my test user tried the first version, they commented that there were too few fruit cards. The game ended very quickly and felt unfinished. I increased the total pool of fruit tiles multiple times, adjusting the tile bag so there are enough tiles to create a satisfying play session, and the total count is a multiple of three so every fruit can be matched and cleared.
+2. Removed the level system. I decided to keep just one fixed playable board, which fits the brief: one carefully designed interaction loop instead of many incomplete features.
+3. Added continuous falling fruit background animation as decorative feedback.
+4. Fixed bugs: reset freeze on restart, tile counting mismatch that prevented the board from being fully cleared.
 
-## Design decisions and changes
-1. First version used a flat grid. I changed to offset positions so upper-layer tiles visibly overlap lower-layer tiles, making the "stacking" obvious.
-2. Added drop shadows and hover lift to make tiles feel physical and clickable.
-3. Made blocked tiles dim and desaturated so the player can instantly tell which tiles are usable.
-4. Added a hint bar under the game to explain the rules without a tutorial screen.
+## User trial observation
+I asked one person to test the game without explaining the rules first.
+- Observation: The tester quickly understood clicking bright tiles, but they said the original board was too small and the game was over too fast. They wanted more tiles to make the game longer.
+- My decision: I added more fruit tiles and expanded the tile pool, which is the main iteration for this project.
+- After adding more tiles, the tester found the pacing much better and could complete a full game naturally.
 
-## User trial
-I asked one classmate to try the game without explaining the rules first.
+## AI tool usage
+I used AI assistance for this project.
+- Things I kept: HTML & CSS layout code, tile click logic, tray matching logic, fireworks and falling fruit animation code, bug fixes for the reset freeze issue.
+- Things I rejected / changed: The original multi-level structure the AI suggested. I decided a single fixed board was simpler and better matched the assignment brief.
+I did not use any paid APIs, external models or sound services.
 
-Observations:
-- They immediately clicked the bright tiles and ignored the dim ones, which confirmed the visual feedback works.
-- At first they did not notice the tray at the bottom; after one or two clicks they saw the tile move down and understood.
-- They tried clicking a dim tile, saw nothing happen, and immediately understood it was blocked.
-
-Change I made: I added the subtitle "Click an uncovered tile to move it to the tray" above the board, so new players understand the goal faster.
-
-## AI tools usage
-I used an AI coding assistant to draft the HTML/CSS/JS structure, then iterated on the visual design.
-- Suggestion I kept: using emoji as tile symbols so no image files are required.
-- Suggestion I rejected: adding a timer and score system. I kept the game simple because the assignment rewards one well-designed interaction over many half-built features.
-
-## Development history
-- Commit 1: Initial working game with basic click, tray, and match logic.
-- Commit 2: Visual upgrade with layered offsets, 3D shadows, and animations.
-- Commit 3: Added README and PROCESS documentation.
+## Error handling implemented
+- Repeated clicks on the same tile are ignored once it is removed
+- Clicks on covered dim tiles have no effect
+- NEW GAME button fully resets tiles, tray, animations and game state
