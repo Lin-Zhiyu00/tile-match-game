@@ -253,9 +253,12 @@
 
 <script>
   const SYMBOLS = ['🍎', '🍊', '🍋', '🍇', '🍉', '🍓'];
-  const TILE = 60;
+  const TILE_SIZE = 60;
   const GAP = 8;
   const TRAY_MAX = 7;
+  // 棋盘内边距，用来让整组卡牌居中，不再靠左
+  const PAD_X = 24;
+  const PAD_Y = 18;
 
   let tiles = [];
   let tray = [];
@@ -265,13 +268,11 @@
   const trayEl = document.getElementById('tray');
   const message = document.getElementById('message');
 
-  // 底层位置：[col, row]
   const LAYER0_POS = [
     [0, 0], [1, 0], [2, 0], [3, 0],
     [0, 1], [1, 1], [2, 1], [3, 1],
     [0, 2], [1, 2], [2, 2], [3, 2]
   ];
-  // 上层，叠在底层上面，偏移一点露出边缘
   const LAYER1_POS = [
     [1, 0], [2, 0],
     [0, 1], [2, 1],
@@ -315,7 +316,6 @@
     render();
   }
 
-  // 判断是否被压住：同col、row，上层layer更高就盖住
   function isClickable(tile) {
     if (tile.removed) return false;
     for (let other of tiles) {
@@ -335,7 +335,6 @@
     tile.removed = true;
     tray.push(tile.symbol);
 
-    // 消除逻辑
     let count = {};
     tray.forEach(s => count[s] = (count[s] || 0) + 1);
     tray = [];
@@ -370,11 +369,11 @@
     tiles.forEach(tile => {
       const el = document.createElement('div');
       el.className = 'tile';
-      // 上层偏移 7px，制造叠起来的效果
-      const offsetX = tile.layer === 1 ? 7 : 0;
-      const offsetY = tile.layer === 1 ? 7 : 0;
-      el.style.left = tile.col * (TILE + GAP) + offsetX + 'px';
-      el.style.top = tile.row * (TILE + GAP) + offsetY + 'px';
+      // 基础位置 + 全局内边距居中 + 上层小偏移制造叠牌效果
+      const stackOffsetX = tile.layer === 1 ? 6 : 0;
+      const stackOffsetY = tile.layer === 1 ? 6 : 0;
+      el.style.left = PAD_X + tile.col * (TILE_SIZE + GAP) + stackOffsetX + 'px';
+      el.style.top = PAD_Y + tile.row * (TILE_SIZE + GAP) + stackOffsetY + 'px';
       el.style.zIndex = tile.layer * 10 + tile.id;
       el.textContent = tile.symbol;
 
@@ -394,7 +393,6 @@
     }
   }
 
-  // 点击小烟花
   function clickFirework(x, y) {
     const colors = ['#f472b6', '#38bdf8', '#fde047', '#a78bfa', '#4ade80'];
     const count = 18;
@@ -414,7 +412,6 @@
     }
   }
 
-  // 胜利全屏烟花
   function startWinFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -466,16 +463,20 @@
     }, 420);
   }
 
-  // 按钮绑定
   document.getElementById('resetBtn').onclick = initGame;
 
-  // 卡牌点击烟花
   board.addEventListener('click', (e) => {
     if (e.target.classList.contains('tile') && !e.target.classList.contains('removed')) {
       const rect = board.getBoundingClientRect();
       clickFirework(e.clientX - rect.left, e.clientY - rect.top);
     }
   });
+
+  initGame();
+</script>
+</body>
+</html>
+
 
   initGame();
 </script>
