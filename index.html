@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tile Match - 羊了个羊</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#1a2a1a,#0f1f0f);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:20px;
+}
+h1{margin:10px 0;color:#86efac;letter-spacing:2px}
+#board{
+  position:relative;
+  width:300px;
+  height:240px;
+  margin:20px 0;
+}
+.tile{
+  position:absolute;
+  width:56px;
+  height:56px;
+  border-radius:10px;
+  background:linear-gradient(145deg,#fef3c7,#fde68a);
+  border:2px solid #fff;
+  box-shadow:0 3px 8px rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  cursor:pointer;
+  transition:transform 0.15s, opacity 0.2s;
+  user-select:none;
+}
+.tile:hover{transform:translateY(-4px)}
+.tile.blocked{
+  opacity:0.45;
+  cursor:not-allowed;
+  filter:grayscale(0.5);
+}
+.tile.removed{display:none}
+#tray{
+  display:flex;
+  gap:8px;
+  padding:12px;
+  background:rgba(255,255,255,0.08);
+  border-radius:14px;
+  min-height:60px;
+  margin:10px 0;
+}
+.tray-slot{
+  width:56px;height:56px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.05);
+  border:2px dashed rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;
+}
+#message{
+  min-height:30px;
+  font-size:18px;
+  margin:10px 0;
+  font-weight:bold;
+}
+.win{color:#4ade80}
+.lose{color:#f87171}
+button{
+  padding:12px 28px;
+  border:none;border-radius:12px;
+  background:#22c55e;color:#fff;
+  font-size:16px;font-weight:bold;cursor:pointer;
+}
+button:hover{background:#16a34a}
+</style>
+</head>
+<body>
+<h1>🎮 TILE MATCH</h1>
+<div id="board"></div>
+<div id="tray"></div>
+<div id="message"></div>
+<button id="resetBtn">🔄 New Game</button>
+
+<script>
+const SYMBOLS = ['🍎','🍊','🍋','🍇','🍉','🍓'];
+const TILE_SIZE = 56;
+const GAP = 8;
+const TRAY_MAX = 7;
+
+let tiles = [];
+let tray = [];
+let gameOver = false;
+
+const board = document.getElementById('board');
+const trayEl = document.getElementById('tray');
+const message = document.getElementById('message');
+
+function initGame(){
+  // 生成6种牌，每种3张 = 18张
+  let bag = [];
+  SYMBOLS.forEach(s => { for(let i=0;i<3;i++) bag.push(s); });
+  bag.sort(() => Math.random() - 0.5); // 洗牌
+
+  tiles = [];
+  tray = [];
+  gameOver = false;
+  message.textContent = '';
+  message.className = '';
+
+  let idx = 0;
+  // 第0层：4列 x 3行 = 12个位置
+  for(let r=0;r<3;r++){
+    for(let c=0;c<4;c++){
+      tiles.push({
+        id: idx,
+        symbol: bag[idx++],
+        layer: 0,
+        row: r, col: c,
+        removed: false
+      });
+    }
+  }
+  // 第1层：6张牌，直接压在第0层的前6个位置上
+  // 这些牌会盖住下面的牌，必须先拿走上层
+  const topPositions = [[0,0],[0,1],[1,0],[1,2],[2,1],[2,2]];
+  topPositions.forEach(([r,c]) => {
+    tiles.push({
+      id: idx,
+      symbol: bag[idx++],
+      layer: 1,
+      row: r, col: c,
+      removed: false
+    });
+  });
+
+  render();
+}
+
+// 判断某张牌是否被上层牌盖住
+function isClickable(tile){
+  if(tile.removed) return false;
+  // 检查有没有更高层、还存在的牌压在同一个位置
+  for(let other of tiles){
+    if(other.removed) continue;
+    if(other.layer <= tile.layer) continue;
+    if(other.row === tile.row && other.col === tile.col) return false;
+  }
+  return true;
+}
+
+function onTileClick(tile){
+  if(gameOver) return;
+  if(!isClickable(tile)) return;
+
+  tile.removed = true;
+  tray.push(tile.symbol);
+
+  // 检查槽位里有没有3张相同
+  checkTrayMatches();
+  render();
+  checkWinLose();
+}
+
+function checkTrayMatches(){
+  // 统计每种牌的数量
+  let count = {};
+  tray.forEach(s => count[s] = (count[s]||0) + 1);
+
+  // 找到有3张的牌型，删掉
+  let toRemove = [];
+  tray.forEach((s, i) => {
+    if(count[s] >= 3) toRemove.push(s);
+  });
+
+  // 每种删掉前3个
+  let removedSymbols = new Set();
+  let newTray = [];
+  tray.forEach(s => {
+    if(count[s] >= 3 && !removedSymbols.has(s)){
+      // 跳过前3个
+      removedSymbols.add(s);
+      return;
+    }
+    if(count[s] >= 3 && removedSymbols.has(s)){
+      // 这一组已经删过3个了，如果还有第4张应该保留？
+      // 简单起见：同色>=3就只保留删掉3个后剩下的
+    }
+    newTray.push(s);
+  });
+
+  // 更简单正确的做法：每种保留 (count-3) 张
+  let kept = {};
+  tray.forEach(s => {
+    kept[s] = (kept[s]||0) + 1;
+  });
+  tray = [];
+  Object.keys(kept).forEach(s => {
+    let n = kept[s];
+    if(n >= 3) n -= 3;
+    for(let i=0;i<n;i++) tray.push(s);
+  });
+}
+
+function checkWinLose(){
+  let remaining = tiles.filter(t => !t.removed).length;
+  if(remaining === 0){
+    message.textContent = '🎉 YOU WIN!';
+    message.className = 'win';
+    gameOver = true;
+    return;
+  }
+  if(tray.length >= TRAY_MAX){
+    message.textContent = '💥 GAME OVER! Tray full!';
+    message.className = 'lose';
+    gameOver = true;
+  }
+}
+
+function render(){
+  board.innerHTML = '';
+  tiles.forEach(tile => {
+    const el = document.createElement('div');
+    el.className = 'tile';
+    el.style.left = tile.col * (TILE_SIZE + GAP) + 'px';
+    el.style.top = tile.row * (TILE_SIZE + GAP) + 'px';
+    el.style.zIndex = tile.layer;
+    el.textContent = tile.symbol;
+    if(tile.removed) el.classList.add('removed');
+    else if(!isClickable(tile)) el.classList.add('blocked');
+    el.onclick = () => onTileClick(tile);
+    board.appendChild(el);
+  });
+
+  trayEl.innerHTML = '';
+  for(let i=0;i<TRAY_MAX;i++){
+    const slot = document.createElement('div');
+    slot.className = 'tray-slot';
+    slot.textContent = tray[i] || '';
+    trayEl.appendChild(slot);
+  }
+}
+
+document.getElementById('resetBtn').onclick = initGame;
+initGame();
+</script>
+</body>
+</html>
