@@ -28,7 +28,8 @@ Option B: download `index.html` and double-click it to open in any modern browse
 - The Reset button always starts a fresh shuffled game.
 
 ## Screenshot
-![screenshot](screenshot.png)
+<img width="959" height="502" alt="9a49b72b44c5985fdb31bc9d59ad2b0c" src="https://github.com/user-attachments/assets/cb80f9ec-e83f-4a48-9fd0-2ec17b4bd4c8" />
+
 
 ## Known limitations
 - Only 6 tile types and 18 tiles per round.
