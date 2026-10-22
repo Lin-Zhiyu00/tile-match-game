@@ -36,6 +36,12 @@
       0 0 24px rgba(56, 189, 248, 0.6);
     margin-bottom: 8px;
   }
+  .level-text {
+    font-size: 20px;
+    font-weight: bold;
+    color:#0369a1;
+    margin-bottom:6px;
+  }
   .subtitle {
     color: #075985;
     font-size: 14px;
@@ -46,7 +52,6 @@
   }
   #board {
     position: relative;
-    /* ===== 新尺寸：适配 5列 × 4行网格 ===== */
     width: 460px;
     height: 370px;
     margin: 10px 0 18px;
@@ -145,6 +150,31 @@
     color: #dc2626;
     text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 24px rgba(248, 113, 113, 0.8);
   }
+  .modal {
+    position: fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:99;
+  }
+  .modal-box{
+    background:#fff;
+    padding:40px 60px;
+    border-radius:24px;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-box h2{
+    font-size:42px;
+    color:#0369a1;
+    margin-bottom:20px;
+  }
+  .modal-box button{
+    padding:12px 24px;
+    font-size:18px;
+  }
   .controls {
     display: flex;
     gap: 14px;
@@ -210,6 +240,7 @@
 </head>
 <body>
   <h1>🎆 TILE MATCH 🎆</h1>
+  <div class="level-text">LEVEL <span id="levelNum">1</span></div>
   <div class="subtitle">
     Click bright uncovered tiles → move them to the tray<br>
     Match 3 identical tiles to clear them. Clear all tiles to win!
@@ -218,12 +249,21 @@
   <div id="tray"></div>
   <div id="message"></div>
   <div class="controls">
-    <button id="resetBtn">🔄 NEW GAME</button>
+    <button id="resetBtn">🔄 RESTART</button>
   </div>
   <div class="hint">
     ✨ Bright tiles are clickable · Dim tiles are covered by upper tiles<br>
     🎯 3 matching tiles in the tray will clear automatically · Tray of 7 = Game Over
   </div>
+
+  <!-- YOU WIN 弹窗 -->
+  <div class="modal" id="winModal">
+    <div class="modal-box">
+      <h2>YOU WIN!</h2>
+      <button id="nextLevelBtn">NEXT LEVEL →</button>
+    </div>
+  </div>
+
   <canvas id="fireworks"></canvas>
 <script>
   const SYMBOLS = ['🍎', '🍊', '🍋', '🍇', '🍉', '🍓'];
@@ -231,72 +271,97 @@
   const GAP = 8;
   const TRAY_MAX = 7;
 
-  // 网格行列
-  const COLS = 5;
-  const ROWS = 4;
-  // 自动计算居中内边距，彻底解决偏移
-  const GRID_W = COLS * (TILE_SIZE + GAP) - GAP;
-  const GRID_H = ROWS * (TILE_SIZE + GAP) - GAP;
-  const PAD_X = (460 - GRID_W) / 2;
-  const PAD_Y = (370 - GRID_H) / 2;
-
+  let currentLevel = 1;
   let tiles = [];
   let tray = [];
   let gameOver = false;
+
   const board = document.getElementById('board');
   const trayEl = document.getElementById('tray');
   const message = document.getElementById('message');
+  const levelNumEl = document.getElementById('levelNum');
+  const winModal = document.getElementById('winModal');
+  const nextLevelBtn = document.getElementById('nextLevelBtn');
+  const resetBtn = document.getElementById('resetBtn');
 
-  // ===== 底层 Layer0：完整4行5列 =====
-  const LAYER0_POS = [];
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      LAYER0_POS.push([c,r]);
-    }
+  // 根据关卡返回配置：行列、层数、每种水果数量
+  function getLevelConfig(level) {
+    const baseCols = 4;
+    const baseRows = 3;
+    const add = Math.floor((level - 1) / 2);
+    const cols = Math.min(baseCols + add, 6);
+    const rows = Math.min(baseRows + add, 5);
+    const layers = level < 3 ? 2 : 3;
+    const countPerSymbol = Math.min(3 + level, 8);
+    return {cols, rows, layers, countPerSymbol};
   }
-  // ===== 上层 Layer1，叠加一部分卡牌，制造遮挡 =====
-  const LAYER1_POS = [
-    [1,0], [2,0], [3,0],
-    [0,1], [2,1], [4,1],
-    [1,2], [2,2], [3,2],
-    [0,3], [2,3], [4,3]
-  ];
+
+  function generatePositions(cols, rows, layers) {
+    const posList = [];
+    for(let l=0; l<layers; l++){
+      const layerPos = [];
+      for(let r=0; r<rows; r++){
+        for(let c=0; c<cols; c++){
+          // 上层随机放一部分，不全铺满，制造遮挡
+          if(l === 0 || Math.random() > 0.4){
+            layerPos.push([c,r]);
+          }
+        }
+      }
+      posList.push(layerPos);
+    }
+    return posList;
+  }
 
   function initGame() {
-    // 每种水果准备4个，牌量变多
+    const cfg = getLevelConfig(currentLevel);
+    levelNumEl.textContent = currentLevel;
+    const {cols, rows, layers, countPerSymbol} = cfg;
+
+    // 动态修改board尺寸适配本关网格
+    const gridW = cols * (TILE_SIZE + GAP) - GAP;
+    const gridH = rows * (TILE_SIZE + GAP) - GAP;
+    const boardW = gridW + 40;
+    const boardH = gridH + 40;
+    board.style.width = boardW + 'px';
+    board.style.height = boardH + 'px';
+    const PAD_X = (boardW - gridW)/2;
+    const PAD_Y = (boardH - gridH)/2;
+
+    // 生成牌堆
     let bag = [];
     SYMBOLS.forEach(s => {
-      for (let i = 0; i < 4; i++) bag.push(s);
+      for(let i=0; i<countPerSymbol; i++) bag.push(s);
     });
     bag.sort(() => Math.random() - 0.5);
+
     tiles = [];
     tray = [];
     gameOver = false;
     message.textContent = '';
     message.className = '';
+    winModal.style.display = 'none';
+
+    const allPos = generatePositions(cols, rows, layers);
     let idx = 0;
-    LAYER0_POS.forEach(([c, r]) => {
-      tiles.push({
-        id: idx,
-        symbol: bag[idx++ % bag.length],
-        layer: 0,
-        col: c,
-        row: r,
-        removed: false
-      });
-    });
-    LAYER1_POS.forEach(([c, r]) => {
-      tiles.push({
-        id: idx,
-        symbol: bag[idx++ % bag.length],
-        layer: 1,
-        col: c,
-        row: r,
-        removed: false
-      });
-    });
+    allPos.forEach((layerPos, layerIndex)=>{
+      layerPos.forEach(([c,r])=>{
+        tiles.push({
+          id: idx,
+          symbol: bag[idx % bag.length],
+          layer: layerIndex,
+          col: c,
+          row: r,
+          removed: false,
+          padX: PAD_X,
+          padY: PAD_Y
+        });
+        idx++;
+      })
+    })
     render();
   }
+
   function isClickable(tile) {
     if (tile.removed) return false;
     for (let other of tiles) {
@@ -308,11 +373,13 @@
     }
     return true;
   }
+
   function onTileClick(tile) {
     if (gameOver) return;
     if (!isClickable(tile)) return;
     tile.removed = true;
     tray.push(tile.symbol);
+
     let count = {};
     tray.forEach(s => count[s] = (count[s] || 0) + 1);
     tray = [];
@@ -324,13 +391,15 @@
     render();
     checkWinLose();
   }
+
   function checkWinLose() {
     let remaining = tiles.filter(t => !t.removed).length;
     if (remaining === 0) {
-      message.textContent = '🎉 YOU WIN! FIREWORKS! 🎉';
+      message.textContent = '🎉 Level Complete!';
       message.className = 'win';
       gameOver = true;
       startWinFireworks();
+      winModal.style.display = 'flex';
       return;
     }
     if (tray.length >= TRAY_MAX) {
@@ -339,16 +408,16 @@
       gameOver = true;
     }
   }
+
   function render() {
     board.innerHTML = '';
     tiles.forEach(tile => {
       const el = document.createElement('div');
       el.className = 'tile';
-      const stackOffsetX = tile.layer === 1 ? 5 : 0;
-      const stackOffsetY = tile.layer === 1 ? 5 : 0;
-      // 居中公式：PAD_X 是自动算出来的，网格不会偏移
-      el.style.left = PAD_X + tile.col * (TILE_SIZE + GAP) + stackOffsetX + 'px';
-      el.style.top = PAD_Y + tile.row * (TILE_SIZE + GAP) + stackOffsetY + 'px';
+      const stackOffsetX = tile.layer > 0 ? 5 : 0;
+      const stackOffsetY = tile.layer > 0 ? 5 : 0;
+      el.style.left = tile.padX + tile.col * (TILE_SIZE + GAP) + stackOffsetX + 'px';
+      el.style.top = tile.padY + tile.row * (TILE_SIZE + GAP) + stackOffsetY + 'px';
       el.style.zIndex = tile.layer * 10 + tile.id;
       el.textContent = tile.symbol;
       if (tile.removed) el.classList.add('removed');
@@ -364,6 +433,7 @@
       trayEl.appendChild(slot);
     }
   }
+
   function clickFirework(x, y) {
     const colors = ['#f472b6', '#38bdf8', '#fde047', '#a78bfa', '#4ade80'];
     const count = 18;
@@ -382,6 +452,7 @@
       setTimeout(() => p.remove(), 1700);
     }
   }
+
   function startWinFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -430,13 +501,26 @@
       if (launches >= 8) clearInterval(timer);
     }, 420);
   }
-  document.getElementById('resetBtn').onclick = initGame;
+
+  nextLevelBtn.onclick = ()=>{
+    currentLevel += 1;
+    initGame();
+  }
+  resetBtn.onclick = ()=>{
+    currentLevel = 1;
+    initGame();
+  }
   board.addEventListener('click', (e) => {
     if (e.target.classList.contains('tile') && !e.target.classList.contains('removed')) {
       const rect = board.getBoundingClientRect();
       clickFirework(e.clientX - rect.left, e.clientY - rect.top);
     }
   });
+  initGame();
+</script>
+</body>
+</html>
+
   initGame();
 </script>
 </body>
