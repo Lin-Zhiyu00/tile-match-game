@@ -3,66 +3,39 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tile Match Celebration</title>
+<title>Fruit Tile Match</title>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", system-ui, sans-serif;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
   body {
     min-height: 100vh;
     background:
-      radial-gradient(circle at 20% 10%, rgba(191, 219, 254, 0.9), transparent 40%),
-      radial-gradient(circle at 80% 20%, rgba(125, 186, 252, 0.8), transparent 45%),
-      radial-gradient(circle at 50% 90%, rgba(147, 187, 253, 0.9), transparent 40%),
-      linear-gradient(135deg, #7dd3fc 0%, #bae6fd 45%, #bae6fd 100%);
+      radial-gradient(circle at 20% 10%, rgba(191,219,254,0.9), transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(125,211,252,0.8), transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(147,197,253,0.9), transparent 40%),
+      linear-gradient(135deg, #7dd3fc 0%, #bae6fd 45%, #e0f2fe 100%);
     color: #0f172a;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px;
-    overflow-x: hidden;
-    position: relative;
-    z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px; overflow-x: hidden; position: relative;
   }
   h1 {
-    font-size: 34px;
-    letter-spacing: 8px;
-    color: #0369a1;
-    text-shadow:
-      0 0 12px rgba(255,255,255,0.9),
-      0 0 24px rgba(56, 189, 248, 0.6);
-    margin-bottom: 8px;
+    font-size: 34px; letter-spacing: 6px; color: #0369a1;
+    text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(56,189,248,0.6);
+    margin-bottom: 8px; position: relative; z-index: 5;
   }
   .subtitle {
-    color: #075985;
-    font-size: 14px;
-    margin-bottom: 18px;
-    opacity: 0.85;
-    text-align: center;
-    line-height: 1.5;
+    color: #075985; font-size: 14px; margin-bottom: 18px;
+    opacity: 0.85; text-align: center; line-height: 1.5; position: relative; z-index: 5;
   }
   #board {
-    position: relative;
-    width: 460px;
-    height: 370px;
-    margin: 10px 0 18px;
-    border-radius: 28px;
-    background:
-      radial-gradient(circle at center, rgba(255,255,255,0.6), rgba(186,230,253,0.4));
+    position: relative; width: 440px; height: 310px;
+    margin: 10px 0 18px; border-radius: 28px;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.6), rgba(186,230,253,0.4));
     border: 1px solid rgba(255,255,255,0.6);
-    box-shadow:
-      0 20px 50px rgba(14, 116, 144, 0.25),
-      inset 0 0 40px rgba(255,255,255,0.7);
-    overflow: hidden;
-    z-index: 2;
+    box-shadow: 0 20px 50px rgba(14,116,144,0.25), inset 0 0 40px rgba(255,255,255,0.7);
+    overflow: hidden; z-index: 5;
   }
   #board::before {
-    content: "";
-    position: absolute;
-    inset: 0;
+    content: ""; position: absolute; inset: 0;
     background-image:
       linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px);
@@ -71,452 +44,422 @@
     pointer-events: none;
   }
   .tile {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-    background: linear-gradient(145deg, #ffffff 0%, #e0f2fe 50%, #7dd3fc 100%);
+    position: absolute; width: 60px; height: 60px; border-radius: 16px;
+    background: linear-gradient(145deg, #fff 0%, #e0f2fe 50%, #7dd3fc 100%);
     border: 2px solid rgba(255,255,255,0.9);
-    box-shadow:
-      0 10px 24px rgba(14, 116, 144, 0.35),
-      inset 0 0 0 1px rgba(255,255,255,0.6),
-      inset 0 6px 12px rgba(255,255,255,0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(14,116,144,0.35), inset 0 0 0 1px rgba(255,255,255,0.6), inset 0 6px 12px rgba(255,255,255,0.8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, opacity 0.25;
     user-select: none;
   }
   .tile:hover {
     transform: translateY(-6px) scale(1.06);
-    box-shadow:
-      0 18px 32px rgba(14, 116, 144, 0.45),
-      0 0 20px rgba(255,255,255,0.9);
+    box-shadow: 0 18px 32px rgba(14,116,144,0.45), 0 0 20px rgba(255,255,255,0.9);
   }
-  .tile.blocked {
-    opacity: 0.35;
-    cursor: not-allowed;
-    filter: brightness(0.75) saturate(0.6);
-  }
+  .tile.blocked { opacity: 0.35; cursor: not-allowed; filter: brightness(0.75) saturate(0.6); }
   .tile.removed {
-    transition: all 0.35s cubic-bezier(0.2,0.7,0.3,1);
-    transform: scale(0.2) rotate(180deg);
-    opacity: 0;
-    pointer-events: none;
+    transition: all 0.35s cubic-bezier(.2,.7,.3,1);
+    transform: scale(0.2) rotate(180deg); opacity: 0; pointer-events: none;
   }
   #tray {
-    display: flex;
-    gap: 10px;
-    padding: 14px;
-    background: rgba(255,255,255,0.55);
-    border: 1px solid rgba(255,255,255,0.8);
-    border-radius: 22px;
-    min-height: 72px;
-    margin: 10px 0 14px;
+    display: flex; gap: 10px; padding: 14px;
+    background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 22px; min-height: 72px; margin: 10px 0 14px;
     box-shadow: 0 12px 30px rgba(14,116,144,0.25);
-    backdrop-filter: blur(6px);
-    z-index: 2;
-    position: relative;
+    backdrop-filter: blur(8px); position: relative; z-index: 5;
   }
   .tray-slot {
-    width: 60px;
-    height: 60px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.7);
-    border: 2px dashed rgba(56,189,248,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
+    width: 60px; height: 60px; border-radius: 14px;
+    background: rgba(255,255,255,0.7); border: 2px dashed rgba(56,189,248,0.7);
+    display: flex; align-items: center; justify-content: center; font-size: 32px;
   }
   #message {
-    min-height: 34px;
-    font-size: 22px;
-    margin: 4px 0 14px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-align: center;
-    z-index: 2;
-    position: relative;
+    min-height: 34px; font-size: 24px; margin: 4px 0 14px;
+    font-weight: 800; letter-spacing: 2px; text-align: center;
+    position: relative; z-index: 5;
   }
-  .win {
-    color: #059669;
-    text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(52,211,153,0.8);
-  }
-  .lose {
-    color: #dc2626;
-    text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(248,113,113,0.8);
-  }
-  .controls {
-    display: flex;
-    gap: 14px;
-    margin-top: 4px;
-    position: relative;
-    z-index: 10;
-  }
+  .win { color: #059669; text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(52,211,153,0.8); }
+  .lose { color: #dc2626; text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(248,113,113,0.8); }
+  .controls { display: flex; gap: 14px; margin-top: 4px; position: relative; z-index: 10; }
   button {
-    padding: 14px 30px;
-    border: none;
-    border-radius: 16px;
+    padding: 14px 30px; border: none; border-radius: 16px;
     background: linear-gradient(135deg, #38bdf8, #0284c7);
-    color: #fff;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    letter-spacing: 2px;
-    box-shadow: 0 10px 24px rgba(14,116,144,0.45);
-    transition: 0.25s;
-    position: relative;
-    z-index: 10;
+    color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; letter-spacing: 2px;
+    box-shadow: 0 10px 24px rgba(14,116,144,0.45); transition: 0.25s;
   }
-  button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 32px rgba(14,116,144,0.55);
-  }
+  button:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(14,116,144,0.55); }
   .hint {
-    color: #075985;
-    font-size: 13px;
-    margin-top: 20px;
-    opacity: 0.8;
-    text-align: center;
-    line-height: 1.6;
-    z-index: 2;
-    position: relative;
+    color: #075985; font-size: 13px; margin-top: 20px;
+    opacity: 0.8; text-align: center; line-height: 1.6; position: relative; z-index: 5;
   }
-  #fireworks {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-  }
+  #fireworks { position: fixed; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
   .falling-fruit {
-    position: fixed;
-    top: -60px;
-    font-size: 42px;
-    pointer-events: none;
-    z-index: 1;
-    animation: fruitFall linear forwards;
-    filter: drop-shadow(0 6px 10px rgba(14, 116, 144, 0.35));
+    position: fixed; top: -80px; pointer-events: none; z-index: 2;
+    animation: fruitFall linear forwards, fruitSwing 1.2s ease-in-out infinite alternate;
+    filter: drop-shadow(0 8px 12px rgba(14,116,144,0.35)); will-change: transform;
   }
   @keyframes fruitFall {
-    0% {
-      transform: translateY(0) rotate(0deg);
-      opacity: 0;
-    }
-    10% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(110vh) rotate(360deg);
-      opacity: 0.9;
-    }
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    8% { opacity: 1; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0.9; }
   }
+  @keyframes fruitSwing { from { margin-left: -20px; } to { margin-left: 20px; } }
   .bounce-fruit {
-    position: absolute;
-    bottom: 20px;
-    font-size: 48px;
-    animation: bounceFruit 2.4s ease-in-out infinite;
-    z-index: 1;
-    filter: drop-shadow(0 8px 12px rgba(14, 116, 144, 0.35));
+    position: fixed; bottom: 20px; font-size: 48px;
+    animation: bounceFruit 2.4s ease-in-out infinite; z-index: 2;
+    filter: drop-shadow(0 8px 12px rgba(14,116,144,0.35)); pointer-events: none;
   }
   @keyframes bounceFruit {
-    0%, 100% { transform: translateY(0) scale(1); }
+    0%,100% { transform: translateY(0) scale(1); }
     50% { transform: translateY(-18px) scale(1.08); }
   }
   .fw-particle {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    pointer-events: none;
-    animation: fwFly 1.6s ease-out forwards;
+    position: fixed; width: 6px; height: 6px; border-radius: 50%;
+    pointer-events: none; z-index: 3; animation: fwFly 1.6s ease-out forwards;
   }
   @keyframes fwFly {
-    0% {
-      transform: translate(0,0) scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: translate(var(--tx), var(--ty)) scale(0.2);
-      opacity: 0;
-    }
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--fw-x), var(--fw-y)) scale(0.2); opacity: 0; }
+  }
+  #muteBtn {
+    position: fixed; top: 16px; right: 16px; z-index: 100;
+    padding: 8px 14px; font-size: 14px; background: rgba(255,255,255,0.7);
+    color: #0369a1; box-shadow: 0 4px 12px rgba(14,116,144,0.2);
   }
 </style>
 </head>
 <body>
-  <h1>🎆 TILE MATCH 🎆</h1>
+  <button id="muteBtn">🔊 Sound On</button>
+  <h1>FRUIT TILE MATCH</h1>
   <div class="subtitle">
-    Click bright uncovered tiles to send them to the tray<br>
-    Match 3 identical fruits to clear them, clear all to win!
+    Click bright uncovered tiles → move them to the tray<br>
+    Match 3 identical tiles to clear them. Clear all tiles to win!
   </div>
   <div id="board"></div>
   <div id="tray"></div>
   <div id="message"></div>
   <div class="controls">
-    <button id="resetBtn">🔄 NEW GAME</button>
+    <button id="resetBtn">NEW GAME</button>
   </div>
   <div class="hint">
-    ✨ Bright tiles can be clicked. Dim tiles are blocked.<br>
-    🎯 3 matching fruits clear automatically. 7 fruits = game over.
+    Bright tiles are clickable · Dim tiles are covered by upper tiles<br>
+    3 matching tiles in the tray will clear automatically · Tray of 7 = Game Over
   </div>
 
-  <div class="bounce-fruit" style="left: 8%; animation-delay: 0s;">🍎</div>
-  <div class="bounce-fruit" style="right: 12%; animation-delay: 0.4s;">🍇</div>
-  <div class="bounce-fruit" style="left: 30%; animation-delay: 0.8s;">🍋</div>
-  <div class="bounce-fruit" style="right: 30%; animation-delay: 1.2s;">🍊</div>
+  <div class="bounce-fruit" style="left: 6%; animation-delay: 0s;">🍎</div>
+  <div class="bounce-fruit" style="right: 8%; animation-delay: 0.4s;">🍇</div>
+  <div class="bounce-fruit" style="left: 25%; animation-delay: 0.8s;">🍋</div>
+  <div class="bounce-fruit" style="right: 25%; animation-delay: 1.2s;">🍊</div>
   <div class="bounce-fruit" style="left: 55%; animation-delay: 1.6s;">🍉</div>
   <div class="bounce-fruit" style="right: 55%; animation-delay: 2s;">🍓</div>
 
   <canvas id="fireworks"></canvas>
 
-  <!-- 背景音乐 -->
-  <audio id="bgm" loop preload="auto">
-    <source src="bgm.mp3" type="audio/mpeg">
-  
-
 <script>
+  // ===================== 声音系统 (Web Audio API) =====================
+  let audioCtx = null;
+  let bgmOsc = null;
+  let bgmGain = null;
+  let muted = false;
+  let bgmTimer = null;
+
+  function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // 开始背景音乐
+    startBGM();
+  }
+
+  function playTone(freq, duration, type = 'sine', volume = 0.15, when = 0) {
+    if (!audioCtx || muted) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime + when);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + when + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + when);
+    osc.stop(audioCtx.currentTime + when + duration);
+  }
+
+  // 点击音效：清脆短叮
+  function sfxClick() {
+    playTone(880, 0.1, 'triangle', 0.12);
+    playTone(1320, 0.08, 'sine', 0.06, 0.02);
+  }
+
+  // 三消成功：上行琶音
+  function sfxMatch() {
+    playTone(523, 0.12, 'triangle', 0.15);
+    playTone(659, 0.12, 'triangle', 0.15, 0.1);
+    playTone(784, 0.2, 'triangle', 0.18, 0.2);
+  }
+
+  // 胜利：欢快和弦
+  function sfxWin() {
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((f, i) => playTone(f, 0.3, 'triangle', 0.15, i * 0.12));
+    playTone(1319, 0.6, 'sine', 0.12, 0.5);
+  }
+
+  // 失败：低沉音
+  function sfxLose() {
+    playTone(220, 0.3, 'sawtooth', 0.1);
+    playTone(185, 0.5, 'sawtooth', 0.1, 0.25);
+  }
+
+  // 背景音乐：简单循环旋律（C大调欢快）
+  function startBGM() {
+    if (!audioCtx || bgmTimer) return;
+    // C4 E4 G4 E4 | F4 A4 G4 E4 | D4 E4 F4 D4 | C4 E4 G4 C5
+    const melody = [
+      262, 330, 392, 330,
+      349, 440, 392, 330,
+      294, 330, 349, 294,
+      262, 330, 392, 523
+    ];
+    let beat = 0;
+    bgmGain = audioCtx.createGain();
+    bgmGain.gain.value = 0.05; // 音量小一点，不抢戏
+    bgmGain.connect(audioCtx.destination);
+
+    function playBeat() {
+      if (muted || !audioCtx) return;
+      const note = melody[beat % melody.length];
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = note;
+      const g = audioCtx.createGain();
+      g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+      osc.connect(g); g.connect(bgmGain);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+      beat++;
+    }
+    playBeat();
+    bgmTimer = setInterval(playBeat, 400);
+  }
+
+  // 第一次点击页面初始化音频（浏览器自动播放限制）
+  document.body.addEventListener('click', function once() {
+    initAudio();
+    document.body.removeEventListener('click', once);
+  }, { once: true });
+
+  // 静音按钮
+  document.getElementById('muteBtn').onclick = (e) => {
+    e.stopPropagation();
+    muted = !muted;
+    document.getElementById('muteBtn').textContent = muted ? '🔇 Muted' : '🔊 Sound On';
+    if (bgmGain) bgmGain.gain.value = muted ? 0 : 0.05;
+  };
+
+  // ===================== 游戏逻辑 =====================
   const SYMBOLS = ['🍎', '🍊', '🍋', '🍇', '🍉', '🍓'];
-  const TILE_SIZE = 60;
-  const GAP = 8;
-  const TRAY_MAX = 7;
+  const TILE_SIZE = 60, GAP = 8, TRAY_MAX = 7;
+  const COLS = 6, ROWS = 4;
+  const GRID_W = COLS * TILE_SIZE + (COLS - 1) * GAP;
+  const GRID_H = ROWS * TILE_SIZE + (ROWS - 1) * GAP;
+  const BOARD_W = GRID_W + 40, BOARD_H = GRID_H + 40;
+  const PAD_X = (BOARD_W - GRID_W) / 2, PAD_Y = (BOARD_H - GRID_H) / 2;
 
-  const COLS = 5;
-  const ROWS = 4;
-  const GRID_W = COLS * (TILE_SIZE + GAP) - GAP;
-  const GRID_H = ROWS * (TILE_SIZE + GAP) - GAP;
-  const PAD_X = (460 - GRID_W) / 2;
-  const PAD_Y = (370 - GRID_H) / 2;
+  let tiles = [], tray = [], gameOver = false;
+  let fwAnimationId = null, fwTimerId = null, fallingFruitTimerId = null;
 
-  let tiles = [];
-  let tray = [];
-  let gameOver = false;
-  let fireworksRunning = false;
-  let fallInterval;
-  let bgmStarted = false;
-
-  const boardEl = document.getElementById('board');
+  const board = document.getElementById('board');
   const trayEl = document.getElementById('tray');
-  const messageEl = document.getElementById('message');
-  const resetBtn = document.getElementById('resetBtn');
+  const message = document.getElementById('message');
   const canvas = document.getElementById('fireworks');
   const ctx = canvas.getContext('2d');
-  const bgm = document.getElementById('bgm');
-  bgm.volume = 0.22;
 
-  // 第一次页面点击触发BGM
-  document.body.addEventListener('click', ()=>{
-    if(!bgmStarted){
-      bgm.play().catch(e=>{});
-      bgmStarted = true;
-    }
-  }, {once:true})
-
-  const LAYER0_POS = [];
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      LAYER0_POS.push([c, r]);
-    }
+  function buildLayer0() {
+    const pos = [];
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++) pos.push([c, r]);
+    return pos;
   }
-  const LAYER1_POS = [
-    [1, 0], [2, 0], [3, 0],
-    [0, 1], [2, 1], [4, 1],
-    [1, 2], [2, 2], [3, 2],
-    [0, 3], [2, 3], [4, 3]
-  ];
-
-  function shuffle(arr){
-    const a = [...arr];
-    for(let i = a.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i+1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+  function buildLayer1() {
+    return [
+      [1,0],[3,0],[5,0],
+      [0,1],[2,1],[4,1],
+      [1,2],[3,2],[5,2],
+      [0,3],[2,3],[4,3]
+    ];
   }
 
-  function initGame(){
-    // 停止旧烟花
-    fireworksRunning = false;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    // 清空降落定时器
-    clearInterval(fallInterval);
-
-    // 生成牌池：每个水果6个，总数36（3的倍数，可以全部消完）
+  function initGame() {
+    cleanupAnimations();
     let bag = [];
-    SYMBOLS.forEach(s=>{
-      for(let i=0;i<6;i++) bag.push(s);
-    })
-    bag = shuffle(bag);
+    SYMBOLS.forEach(s => { for (let i = 0; i < 6; i++) bag.push(s); });
+    bag.sort(() => Math.random() - 0.5);
 
-    tiles = [];
-    tray = [];
-    gameOver = false;
-    messageEl.textContent = "";
-    messageEl.className = "";
+    tiles = []; tray = []; gameOver = false;
+    message.textContent = ''; message.className = '';
 
     let idx = 0;
-    LAYER0_POS.forEach(([c,r])=>{
-      tiles.push({
-        id: idx,
-        symbol: bag[idx++ % bag.length],
-        layer:0,
-        col:c, row:r, removed:false
-      })
-    })
-    LAYER1_POS.forEach(([c,r])=>{
-      tiles.push({
-        id: idx,
-        symbol: bag[idx++ % bag.length],
-        layer:1,
-        col:c, row:r, removed:false
-      })
-    })
-
+    buildLayer0().forEach(([c,r]) => tiles.push({ id: idx, symbol: bag[idx++], layer: 0, col: c, row: r, removed: false }));
+    buildLayer1().forEach(([c,r]) => tiles.push({ id: idx, symbol: bag[idx++], layer: 1, col: c, row: r, removed: false }));
     render();
-    startFallingFruits();
   }
 
-  function isClickable(tile){
-    if(tile.removed) return false;
-    for(const other of tiles){
-      if(other.removed) continue;
-      if(other.layer <= tile.layer) continue;
-      if(other.col === tile.col && other.row === tile.row){
-        return false;
-      }
+  function cleanupAnimations() {
+    if (fwAnimationId) { cancelAnimationFrame(fwAnimationId); fwAnimationId = null; }
+    if (fwTimerId) { clearInterval(fwTimerId); fwTimerId = null; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.querySelectorAll('.fw-particle').forEach(p => p.remove());
+  }
+
+  function isClickable(tile) {
+    if (tile.removed) return false;
+    for (let o of tiles) {
+      if (o.removed) continue;
+      if (o.layer <= tile.layer) continue;
+      if (o.col === tile.col && o.row === tile.row) return false;
     }
     return true;
   }
 
-  function onTileClick(tile){
-    if(gameOver) return;
-    if(!isClickable(tile)) return;
+  function onTileClick(tile) {
+    if (gameOver || !isClickable(tile)) return;
     tile.removed = true;
+    sfxClick();
     tray.push(tile.symbol);
 
-    // 三消逻辑
-    const count = {};
-    tray.forEach(s=>count[s] = (count[s]||0)+1);
+    let count = {};
+    tray.forEach(s => count[s] = (count[s] || 0) + 1);
+    const hadMatch = Object.values(count).some(n => n >= 3);
     tray = [];
-    Object.entries(count).forEach(([sym,num])=>{
-      const keep = num % 3;
-      for(let i=0;i<keep;i++) tray.push(sym);
-    })
+    Object.keys(count).forEach(s => {
+      let n = count[s];
+      if (n >= 3) { n -= 3; }
+      for (let i = 0; i < n; i++) tray.push(s);
+    });
+    if (hadMatch) sfxMatch();
     render();
     checkWinLose();
   }
 
-  function checkWinLose(){
-    const remaining = tiles.filter(t=>!t.removed).length;
-    if(remaining === 0){
-      messageEl.textContent = "🎉 YOU WIN! 🎉";
-      messageEl.className = "win";
+  function checkWinLose() {
+    let remaining = tiles.filter(t => !t.removed).length;
+    if (remaining === 0) {
+      message.textContent = 'YOU WIN!';
+      message.className = 'win';
       gameOver = true;
+      sfxWin();
       startWinFireworks();
       return;
     }
-    if(tray.length >= TRAY_MAX){
-      messageEl.textContent = "💥 GAME OVER! Tray full";
-      messageEl.className = "lose";
+    if (tray.length >= TRAY_MAX) {
+      message.textContent = 'GAME OVER! Tray is full!';
+      message.className = 'lose';
       gameOver = true;
+      sfxLose();
     }
   }
 
-  function render(){
-    boardEl.innerHTML = "";
-    trayEl.innerHTML = "";
-    tiles.forEach(tile=>{
-      const div = document.createElement('div');
-      div.className = "tile";
-      if(tile.removed) div.classList.add("removed");
-      else if(!isClickable(tile)) div.classList.add("blocked");
-
-      const offX = tile.layer === 1 ? 5 : 0;
-      const offY = tile.layer === 1 ? 5 : 0;
-      div.style.left = PAD_X + tile.col*(TILE_SIZE+GAP) + offX + "px";
-      div.style.top = PAD_Y + tile.row*(TILE_SIZE+GAP) + offY + "px";
-      div.style.zIndex = tile.layer * 10 + tile.id;
-      div.textContent = tile.symbol;
-      div.onclick = ()=>onTileClick(tile);
-      boardEl.appendChild(div);
-    })
-    for(let i=0;i<TRAY_MAX;i++){
+  function render() {
+    board.innerHTML = '';
+    tiles.forEach(tile => {
+      const el = document.createElement('div');
+      el.className = 'tile';
+      const ox = tile.layer === 1 ? 5 : 0;
+      const oy = tile.layer === 1 ? 5 : 0;
+      el.style.left = PAD_X + tile.col * (TILE_SIZE + GAP) + ox + 'px';
+      el.style.top = PAD_Y + tile.row * (TILE_SIZE + GAP) + oy + 'px';
+      el.style.zIndex = tile.layer * 10 + tile.id;
+      el.textContent = tile.symbol;
+      if (tile.removed) el.classList.add('removed');
+      else if (!isClickable(tile)) el.classList.add('blocked');
+      el.onclick = () => onTileClick(tile);
+      board.appendChild(el);
+    });
+    trayEl.innerHTML = '';
+    for (let i = 0; i < TRAY_MAX; i++) {
       const slot = document.createElement('div');
-      slot.className = "tray-slot";
-      slot.textContent = tray[i] ?? "";
+      slot.className = 'tray-slot';
+      slot.textContent = tray[i] || '';
       trayEl.appendChild(slot);
     }
   }
 
-  function startFallingFruits(){
-    fallInterval = setInterval(()=>{
-      const fruit = document.createElement('div');
-      fruit.className = "falling-fruit";
-      fruit.textContent = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
-      fruit.style.left = Math.random()*100 + "vw";
-      fruit.style.animationDuration = (4 + Math.random()*4)+"s";
-      fruit.style.fontSize = (36 + Math.random()*20)+"px";
-      document.body.appendChild(fruit);
-      setTimeout(()=>fruit.remove(),8000);
-    },500);
+  function clickFirework(x, y) {
+    const colors = ['#f472b6', '#38bdf8', '#fde047', '#a78bfa', '#4ade80'];
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'fw-particle';
+      const angle = (Math.PI * 2 / 18) * i;
+      const dist = 60 + Math.random() * 40;
+      p.style.left = x + 'px'; p.style.top = y + 'px';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.boxShadow = '0 0 10px ' + p.style.background;
+      p.style.setProperty('--fw-x', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--fw-y', Math.sin(angle) * dist + 'px');
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1700);
+    }
   }
 
-  function startWinFireworks(){
-    fireworksRunning = true;
+  function startWinFireworks() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const particles = [];
-    function launch(){
+    let particles = [];
+    function launch() {
       const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height * 0.45 + 40;
-      const hue = Math.random()*360;
-      for(let i=0;i<90;i++){
-        const ang = Math.PI*2 /90 * i;
-        const spd = 2.5 + Math.random()*2;
-        particles.push({
-          x,y,
-          vx: Math.cos(ang)*spd,
-          vy: Math.sin(ang)*spd,
-          life: 1,
-          color: `hsl(${hue},90%,65%)`
-        })
+      const y = Math.random() * canvas.height * 0.5 + 40;
+      const color = `hsl(${Math.random() * 360}, 90%, 60%)`;
+      for (let i = 0; i < 90; i++) {
+        const angle = (Math.PI * 2 / 90) * i;
+        const speed = 3 + Math.random() * 4;
+        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, color });
       }
     }
-    let launchTimer = 0;
-    function animate(){
-      if(!fireworksRunning) return;
-      ctx.fillStyle = "rgba(125,211,252,0.12)";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      for(let i = particles.length-1; i>=0;i--){
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.04;
-        p.life -= 0.012;
-        if(p.life <= 0){
-          particles.splice(i,1);
-          continue;
-        }
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,4,0,Math.PI*2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.life;
+    function animate() {
+      ctx.fillStyle = 'rgba(125, 211, 252, 0.18)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      particles = particles.filter(p => p.life > 0);
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.life -= 0.012;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = p.color; ctx.shadowBlur = 12; ctx.shadowColor = p.color;
         ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-      launchTimer++;
-      if(launchTimer % 45 === 0) launch();
-      requestAnimationFrame(animate);
+      });
+      fwAnimationId = requestAnimationFrame(animate);
     }
     animate();
+    let launches = 0;
+    fwTimerId = setInterval(() => {
+      launch();
+      if (++launches >= 10) clearInterval(fwTimerId);
+    }, 400);
   }
 
-  resetBtn.onclick = initGame;
+  function startFallingFruits() {
+    if (fallingFruitTimerId) return;
+    fallingFruitTimerId = setInterval(() => {
+      const fruit = document.createElement('div');
+      fruit.className = 'falling-fruit';
+      fruit.textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+      fruit.style.left = Math.random() * 96 + 'vw';
+      fruit.style.animationDuration = (4 + Math.random() * 3) + 's, ' + (1 + Math.random()) + 's';
+      fruit.style.fontSize = (36 + Math.random() * 24) + 'px';
+      document.body.appendChild(fruit);
+      setTimeout(() => fruit.remove(), 8000);
+    }, 500);
+  }
+
+  document.getElementById('resetBtn').onclick = initGame;
+  board.addEventListener('click', (e) => {
+    if (e.target.classList.contains('tile') && !e.target.classList.contains('removed')) {
+      const rect = board.getBoundingClientRect();
+      clickFirework(e.clientX - rect.left, e.clientY - rect.top);
+    }
+  });
+
   initGame();
+  startFallingFruits();
 </script>
 </body>
 </html>
