@@ -15,9 +15,9 @@
     min-height: 100vh;
     background:
       radial-gradient(circle at 20% 10%, rgba(191, 219, 254, 0.9), transparent 40%),
-      radial-gradient(circle at 80% 20%, rgba(125, 211, 252, 0.8), transparent 45%),
-      radial-gradient(circle at 50% 90%, rgba(147, 197, 253, 0.9), transparent 40%),
-      linear-gradient(135deg, #7dd3fc 0%, #bae6fd 45%, #e0f2fe 100%);
+      radial-gradient(circle at 80% 20%, rgba(125, 186, 252, 0.8), transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(147, 187, 253, 0.9), transparent 40%),
+      linear-gradient(135deg, #7dd3fc 0%, #bae6fd 45%, #bae6fd 100%);
     color: #0f172a;
     display: flex;
     flex-direction: column;
@@ -32,7 +32,7 @@
     letter-spacing: 8px;
     color: #0369a1;
     text-shadow:
-      0 0 12px rgba(255, 255, 255, 0.9),
+      0 0 12px rgba(255,255,255,0.9),
       0 0 24px rgba(56, 189, 248, 0.6);
     margin-bottom: 8px;
   }
@@ -51,11 +51,11 @@
     margin: 10px 0 18px;
     border-radius: 28px;
     background:
-      radial-gradient(circle at center, rgba(255, 255, 255, 0.6), rgba(186, 230, 253, 0.4));
-    border: 1px solid rgba(255, 255, 255, 0.6);
+      radial-gradient(circle at center, rgba(255,255,255,0.6), rgba(186,230,253,0.4));
+    border: 1px solid rgba(255,255,255,0.6);
     box-shadow:
       0 20px 50px rgba(14, 116, 144, 0.25),
-      inset 0 0 40px rgba(255, 255, 255, 0.7);
+      inset 0 0 40px rgba(255,255,255,0.7);
     overflow: hidden;
     z-index: 2;
   }
@@ -76,11 +76,11 @@
     height: 60px;
     border-radius: 16px;
     background: linear-gradient(145deg, #ffffff 0%, #e0f2fe 50%, #7dd3fc 100%);
-    border: 2px solid rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(255,255,255,0.9);
     box-shadow:
       0 10px 24px rgba(14, 116, 144, 0.35),
-      0 0 0 1px rgba(255, 255, 255, 0.6) inset,
-      0 6px 12px rgba(255, 255, 255, 0.8) inset;
+      inset 0 0 0 1px rgba(255,255,255,0.6),
+      inset 0 6px 12px rgba(255,255,255,0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -93,7 +93,7 @@
     transform: translateY(-6px) scale(1.06);
     box-shadow:
       0 18px 32px rgba(14, 116, 144, 0.45),
-      0 0 20px rgba(255, 255, 255, 0.9);
+      0 0 20px rgba(255,255,255,0.9);
   }
   .tile.blocked {
     opacity: 0.35;
@@ -101,7 +101,7 @@
     filter: brightness(0.75) saturate(0.6);
   }
   .tile.removed {
-    transition: all 0.35s cubic-bezier(.2,.7,.3,1);
+    transition: all 0.35s cubic-bezier(0.2,0.7,0.3,1);
     transform: scale(0.2) rotate(180deg);
     opacity: 0;
     pointer-events: none;
@@ -110,13 +110,13 @@
     display: flex;
     gap: 10px;
     padding: 14px;
-    background: rgba(255, 255, 255, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.8);
     border-radius: 22px;
     min-height: 72px;
     margin: 10px 0 14px;
-    box-shadow: 0 12px 30px rgba(14, 116, 144, 0.25);
-    backdrop-filter: blur(8px);
+    box-shadow: 0 12px 30px rgba(14,116,144,0.25);
+    backdrop-filter: blur(6px);
     z-index: 2;
     position: relative;
   }
@@ -124,8 +124,8 @@
     width: 60px;
     height: 60px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 2px dashed rgba(56, 189, 248, 0.7);
+    background: rgba(255,255,255,0.7);
+    border: 2px dashed rgba(56,189,248,0.7);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,11 +143,11 @@
   }
   .win {
     color: #059669;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 24px rgba(52, 211, 153, 0.8);
+    text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(52,211,153,0.8);
   }
   .lose {
     color: #dc2626;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 24px rgba(248, 113, 113, 0.8);
+    text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(248,113,113,0.8);
   }
   .controls {
     display: flex;
@@ -166,14 +166,14 @@
     font-weight: 800;
     cursor: pointer;
     letter-spacing: 2px;
-    box-shadow: 0 10px 24px rgba(14, 116, 144, 0.45);
+    box-shadow: 0 10px 24px rgba(14,116,144,0.45);
     transition: 0.25s;
     position: relative;
     z-index: 10;
   }
   button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 16px 32px rgba(14, 116, 144, 0.55);
+    box-shadow: 0 16px 32px rgba(14,116,144,0.55);
   }
   .hint {
     color: #075985;
@@ -194,8 +194,6 @@
     pointer-events: none;
     z-index: 0;
   }
-
-  /* 降落水果 */
   .falling-fruit {
     position: fixed;
     top: -60px;
@@ -218,8 +216,6 @@
       opacity: 0.9;
     }
   }
-
-  /* 底部弹跳水果装饰 */
   .bounce-fruit {
     position: absolute;
     bottom: 20px;
@@ -232,7 +228,6 @@
     0%, 100% { transform: translateY(0) scale(1); }
     50% { transform: translateY(-18px) scale(1.08); }
   }
-
   .fw-particle {
     position: absolute;
     width: 6px;
@@ -243,11 +238,11 @@
   }
   @keyframes fwFly {
     0% {
-      transform: translate(0, 0) scale(1);
+      transform: translate(0,0) scale(1);
       opacity: 1;
     }
     100% {
-      transform: translate(var(--fw-x), var(--fw-y)) scale(0.2);
+      transform: translate(var(--tx), var(--ty)) scale(0.2);
       opacity: 0;
     }
   }
@@ -256,8 +251,8 @@
 <body>
   <h1>🎆 TILE MATCH 🎆</h1>
   <div class="subtitle">
-    Click bright uncovered tiles → move them to the tray<br>
-    Match 3 identical tiles to clear them. Clear all tiles to win!
+    Click bright uncovered tiles to send them to the tray<br>
+    Match 3 identical fruits to clear them, clear all to win!
   </div>
   <div id="board"></div>
   <div id="tray"></div>
@@ -266,11 +261,10 @@
     <button id="resetBtn">🔄 NEW GAME</button>
   </div>
   <div class="hint">
-    ✨ Bright tiles are clickable · Dim tiles are covered by upper tiles<br>
-    🎯 3 matching tiles in the tray will clear automatically · Tray of 7 = Game Over
+    ✨ Bright tiles can be clicked. Dim tiles are blocked.<br>
+    🎯 3 matching fruits clear automatically. 7 fruits = game over.
   </div>
 
-  <!-- 底部弹跳水果装饰 -->
   <div class="bounce-fruit" style="left: 8%; animation-delay: 0s;">🍎</div>
   <div class="bounce-fruit" style="right: 12%; animation-delay: 0.4s;">🍇</div>
   <div class="bounce-fruit" style="left: 30%; animation-delay: 0.8s;">🍋</div>
@@ -279,6 +273,12 @@
   <div class="bounce-fruit" style="right: 55%; animation-delay: 2s;">🍓</div>
 
   <canvas id="fireworks"></canvas>
+
+  <!-- 背景音乐 -->
+  <audio id="bgm" loop preload="auto">
+    <source src="bgm.mp3" type="audio/mpeg">
+  
+
 <script>
   const SYMBOLS = ['🍎', '🍊', '🍋', '🍇', '🍉', '🍓'];
   const TILE_SIZE = 60;
@@ -295,9 +295,26 @@
   let tiles = [];
   let tray = [];
   let gameOver = false;
-  const board = document.getElementById('board');
+  let fireworksRunning = false;
+  let fallInterval;
+  let bgmStarted = false;
+
+  const boardEl = document.getElementById('board');
   const trayEl = document.getElementById('tray');
-  const message = document.getElementById('message');
+  const messageEl = document.getElementById('message');
+  const resetBtn = document.getElementById('resetBtn');
+  const canvas = document.getElementById('fireworks');
+  const ctx = canvas.getContext('2d');
+  const bgm = document.getElementById('bgm');
+  bgm.volume = 0.22;
+
+  // 第一次页面点击触发BGM
+  document.body.addEventListener('click', ()=>{
+    if(!bgmStarted){
+      bgm.play().catch(e=>{});
+      bgmStarted = true;
+    }
+  }, {once:true})
 
   const LAYER0_POS = [];
   for (let r = 0; r < ROWS; r++) {
@@ -312,200 +329,198 @@
     [0, 3], [2, 3], [4, 3]
   ];
 
-  function initGame() {
+  function shuffle(arr){
+    const a = [...arr];
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function initGame(){
+    // 停止旧烟花
+    fireworksRunning = false;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // 清空降落定时器
+    clearInterval(fallInterval);
+
+    // 生成牌池：每个水果6个，总数36（3的倍数，可以全部消完）
     let bag = [];
-    SYMBOLS.forEach(s => {
-      for (let i = 0; i < 4; i++) bag.push(s);
-    });
-    bag.sort(() => Math.random() - 0.5);
+    SYMBOLS.forEach(s=>{
+      for(let i=0;i<6;i++) bag.push(s);
+    })
+    bag = shuffle(bag);
+
     tiles = [];
     tray = [];
     gameOver = false;
-    message.textContent = '';
-    message.className = '';
+    messageEl.textContent = "";
+    messageEl.className = "";
+
     let idx = 0;
-    LAYER0_POS.forEach(([c, r]) => {
+    LAYER0_POS.forEach(([c,r])=>{
       tiles.push({
         id: idx,
         symbol: bag[idx++ % bag.length],
-        layer: 0,
-        col: c,
-        row: r,
-        removed: false
-      });
-    });
-    LAYER1_POS.forEach(([c, r]) => {
+        layer:0,
+        col:c, row:r, removed:false
+      })
+    })
+    LAYER1_POS.forEach(([c,r])=>{
       tiles.push({
         id: idx,
         symbol: bag[idx++ % bag.length],
-        layer: 1,
-        col: c,
-        row: r,
-        removed: false
-      });
-    });
+        layer:1,
+        col:c, row:r, removed:false
+      })
+    })
+
     render();
+    startFallingFruits();
   }
 
-  function isClickable(tile) {
-    if (tile.removed) return false;
-    for (let other of tiles) {
-      if (other.removed) continue;
-      if (other.layer <= tile.layer) continue;
-      if (other.col === tile.col && other.row === tile.row) {
+  function isClickable(tile){
+    if(tile.removed) return false;
+    for(const other of tiles){
+      if(other.removed) continue;
+      if(other.layer <= tile.layer) continue;
+      if(other.col === tile.col && other.row === tile.row){
         return false;
       }
     }
     return true;
   }
 
-  function onTileClick(tile) {
-    if (gameOver) return;
-    if (!isClickable(tile)) return;
+  function onTileClick(tile){
+    if(gameOver) return;
+    if(!isClickable(tile)) return;
     tile.removed = true;
     tray.push(tile.symbol);
-    let count = {};
-    tray.forEach(s => count[s] = (count[s] || 0) + 1);
+
+    // 三消逻辑
+    const count = {};
+    tray.forEach(s=>count[s] = (count[s]||0)+1);
     tray = [];
-    Object.keys(count).forEach(s => {
-      let n = count[s];
-      if (n >= 3) n -= 3;
-      for (let i = 0; i < n; i++) tray.push(s);
-    });
+    Object.entries(count).forEach(([sym,num])=>{
+      const keep = num % 3;
+      for(let i=0;i<keep;i++) tray.push(sym);
+    })
     render();
     checkWinLose();
   }
 
-  function checkWinLose() {
-    let remaining = tiles.filter(t => !t.removed).length;
-    if (remaining === 0) {
-      message.textContent = '🎉 YOU WIN! 🎉';
-      message.className = 'win';
+  function checkWinLose(){
+    const remaining = tiles.filter(t=>!t.removed).length;
+    if(remaining === 0){
+      messageEl.textContent = "🎉 YOU WIN! 🎉";
+      messageEl.className = "win";
       gameOver = true;
       startWinFireworks();
       return;
     }
-    if (tray.length >= TRAY_MAX) {
-      message.textContent = '💥 GAME OVER! Tray is full!';
-      message.className = 'lose';
+    if(tray.length >= TRAY_MAX){
+      messageEl.textContent = "💥 GAME OVER! Tray full";
+      messageEl.className = "lose";
       gameOver = true;
     }
   }
 
-  function render() {
-    board.innerHTML = '';
-    tiles.forEach(tile => {
-      const el = document.createElement('div');
-      el.className = 'tile';
-      const stackOffsetX = tile.layer === 1 ? 5 : 0;
-      const stackOffsetY = tile.layer === 1 ? 5 : 0;
-      el.style.left = PAD_X + tile.col * (TILE_SIZE + GAP) + stackOffsetX + 'px';
-      el.style.top = PAD_Y + tile.row * (TILE_SIZE + GAP) + stackOffsetY + 'px';
-      el.style.zIndex = tile.layer * 10 + tile.id;
-      el.textContent = tile.symbol;
-      if (tile.removed) el.classList.add('removed');
-      else if (!isClickable(tile)) el.classList.add('blocked');
-      el.onclick = () => onTileClick(tile);
-      board.appendChild(el);
-    });
-    trayEl.innerHTML = '';
-    for (let i = 0; i < TRAY_MAX; i++) {
+  function render(){
+    boardEl.innerHTML = "";
+    trayEl.innerHTML = "";
+    tiles.forEach(tile=>{
+      const div = document.createElement('div');
+      div.className = "tile";
+      if(tile.removed) div.classList.add("removed");
+      else if(!isClickable(tile)) div.classList.add("blocked");
+
+      const offX = tile.layer === 1 ? 5 : 0;
+      const offY = tile.layer === 1 ? 5 : 0;
+      div.style.left = PAD_X + tile.col*(TILE_SIZE+GAP) + offX + "px";
+      div.style.top = PAD_Y + tile.row*(TILE_SIZE+GAP) + offY + "px";
+      div.style.zIndex = tile.layer * 10 + tile.id;
+      div.textContent = tile.symbol;
+      div.onclick = ()=>onTileClick(tile);
+      boardEl.appendChild(div);
+    })
+    for(let i=0;i<TRAY_MAX;i++){
       const slot = document.createElement('div');
-      slot.className = 'tray-slot';
-      slot.textContent = tray[i] || '';
+      slot.className = "tray-slot";
+      slot.textContent = tray[i] ?? "";
       trayEl.appendChild(slot);
     }
   }
 
-  function clickFirework(x, y) {
-    const colors = ['#f472b6', '#38bdf8', '#fde047', '#a78bfa', '#4ade80'];
-    const count = 18;
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement('div');
-      p.className = 'fw-particle';
-      const angle = (Math.PI * 2 / count) * i;
-      const dist = 60 + Math.random() * 40;
-      p.style.left = x + 'px';
-      p.style.top = y + 'px';
-      p.style.background = colors[Math.floor(Math.random() * colors.length)];
-      p.style.boxShadow = '0 0 10px ' + p.style.background;
-      p.style.setProperty('--fw-x', Math.cos(angle) * dist + 'px');
-      p.style.setProperty('--fw-y', Math.sin(angle) * dist + 'px');
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 1700);
-    }
+  function startFallingFruits(){
+    fallInterval = setInterval(()=>{
+      const fruit = document.createElement('div');
+      fruit.className = "falling-fruit";
+      fruit.textContent = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+      fruit.style.left = Math.random()*100 + "vw";
+      fruit.style.animationDuration = (4 + Math.random()*4)+"s";
+      fruit.style.fontSize = (36 + Math.random()*20)+"px";
+      document.body.appendChild(fruit);
+      setTimeout(()=>fruit.remove(),8000);
+    },500);
   }
 
-  function startWinFireworks() {
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
+  function startWinFireworks(){
+    fireworksRunning = true;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    let particles = [];
-    function launch() {
+    const particles = [];
+    function launch(){
       const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height * 0.5 + 40;
-      const color = `hsl(${Math.random() * 360}, 90%, 60%)`;
-      for (let i = 0; i < 90; i++) {
-        const angle = (Math.PI * 2 / 90) * i;
-        const speed = 3 + Math.random() * 4;
+      const y = Math.random() * canvas.height * 0.45 + 40;
+      const hue = Math.random()*360;
+      for(let i=0;i<90;i++){
+        const ang = Math.PI*2 /90 * i;
+        const spd = 2.5 + Math.random()*2;
         particles.push({
-          x, y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
+          x,y,
+          vx: Math.cos(ang)*spd,
+          vy: Math.sin(ang)*spd,
           life: 1,
-          color
-        });
+          color: `hsl(${hue},90%,65%)`
+        })
       }
     }
-    function animate() {
-      ctx.fillStyle = 'rgba(125, 211, 252, 0.18)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      particles = particles.filter(p => p.life > 0);
-      particles.forEach(p => {
+    let launchTimer = 0;
+    function animate(){
+      if(!fireworksRunning) return;
+      ctx.fillStyle = "rgba(125,211,252,0.12)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      for(let i = particles.length-1; i>=0;i--){
+        const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
         p.vy += 0.04;
         p.life -= 0.012;
+        if(p.life <= 0){
+          particles.splice(i,1);
+          continue;
+        }
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.arc(p.x,p.y,4,0,Math.PI*2);
         ctx.fillStyle = p.color;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = p.color;
+        ctx.globalAlpha = p.life;
         ctx.fill();
-      });
+        ctx.globalAlpha = 1;
+      }
+      launchTimer++;
+      if(launchTimer % 45 === 0) launch();
       requestAnimationFrame(animate);
     }
     animate();
-    let launches = 0;
-    const timer = setInterval(() => {
-      launch();
-      launches++;
-      if (launches >= 8) clearInterval(timer);
-    }, 420);
   }
 
-  // 水果降落动画
-  function startFallingFruits() {
-    setInterval(() => {
-      const fruit = document.createElement('div');
-      fruit.className = 'falling-fruit';
-      fruit.textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-      fruit.style.left = Math.random() * 100 + 'vw';
-      fruit.style.animationDuration = (4 + Math.random() * 4) + 's';
-      fruit.style.fontSize = (30 + Math.random() * 20) + 'px';
-      document.body.appendChild(fruit);
-      setTimeout(() => fruit.remove(), 8000);
-    }, 600);
-  }
+  resetBtn.onclick = initGame;
+  initGame();
+</script>
+</body>
+</html>
 
-  document.getElementById('resetBtn').onclick = initGame;
-  board.addEventListener('click', (e) => {
-    if (e.target.classList.contains('tile') && !e.target.classList.contains('removed')) {
-      const rect = board.getBoundingClientRect();
-      clickFirework(e.clientX - rect.left, e.clientY - rect.top);
-    }
-  });
 
   initGame();
   startFallingFruits();
