@@ -1,268 +1,512 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tile Match</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tile Match Celebration</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 30% 20%, #166534, transparent 50%),
-    radial-gradient(circle at 70% 80%, #14532d, transparent 50%),
-    #052e16;
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:20px;
-}
-h1{
-  margin:10px 0;
-  font-size:28px;
-  letter-spacing:6px;
-  color:#bbf7d0;
-  text-shadow:0 0 15px #22c55e;
-}
-.subtitle{color:#86efac;font-size:14px;margin-bottom:10px;opacity:0.8}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", system-ui, sans-serif;
+  }
 
-#board{
-  position:relative;
-  width:340px;
-  height:280px;
-  margin:15px 0;
-}
-.tile{
-  position:absolute;
-  width:58px;
-  height:58px;
-  border-radius:12px;
-  background:linear-gradient(145deg,#fffbeb,#fde68a);
-  border:2px solid #fff;
-  box-shadow:
-    0 6px 14px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.8);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  cursor:pointer;
-  transition:transform 0.2s, opacity 0.2s;
-  user-select:none;
-}
-.tile:hover{transform:translateY(-5px) scale(1.05)}
-.tile.blocked{
-  opacity:0.4;
-  cursor:not-allowed;
-  filter:brightness(0.6);
-}
-.tile.removed{
-  transition:all 0.3s;
-  transform:scale(0);
-  opacity:0;
-  pointer-events:none;
-}
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(191, 219, 254, 0.9), transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(125, 211, 252, 0.8), transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(147, 197, 253, 0.9), transparent 40%),
+      linear-gradient(135deg, #7dd3fc 0%, #bae6fd 45%, #e0f2fe 100%);
+    color: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
 
-#tray{
-  display:flex;
-  gap:8px;
-  padding:12px;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.15);
-  border-radius:16px;
-  min-height:64px;
-  margin:10px 0;
-}
-.tray-slot{
-  width:58px;height:58px;
-  border-radius:12px;
-  background:rgba(0,0,0,0.25);
-  border:2px dashed rgba(255,255,255,0.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;
-}
-#message{
-  min-height:32px;
-  font-size:20px;
-  margin:8px 0;
-  font-weight:bold;
-}
-.win{color:#4ade80;text-shadow:0 0 10px #4ade80}
-.lose{color:#f87171;text-shadow:0 0 10px #f87171}
+  h1 {
+    font-size: 34px;
+    letter-spacing: 8px;
+    color: #0369a1;
+    text-shadow:
+      0 0 12px rgba(255, 255, 255, 0.9),
+      0 0 24px rgba(56, 189, 248, 0.6);
+    margin-bottom: 8px;
+  }
 
-.controls{display:flex;gap:12px;margin-top:10px}
-button{
-  padding:12px 26px;
-  border:none;border-radius:12px;
-  background:linear-gradient(135deg,#22c55e,#15803d);
-  color:#fff;
-  font-size:15px;font-weight:bold;cursor:pointer;
-  box-shadow:0 4px 12px rgba(34,197,94,0.4);
-}
-button:hover{transform:translateY(-2px)}
-.hint{color:#86efac;font-size:13px;margin-top:16px;opacity:0.7;text-align:center;line-height:1.6}
-</style>
-</head>
-<body>
-<h1>🎮 TILE MATCH</h1>
-<div class="subtitle">Click an uncovered tile to move it to the tray. Match 3 to clear!</div>
+  .subtitle {
+    color: #075985;
+    font-size: 14px;
+    margin-bottom: 18px;
+    opacity: 0.85;
+    text-align: center;
+    line-height: 1.5;
+  }
 
-<div id="board"></div>
-<div id="tray"></div>
-<div id="message"></div>
-<div class="controls">
-  <button id="resetBtn">🔄 New Game</button>
-</div>
-<div class="hint">
-  ✨ Bright tiles are clickable · Dim tiles are covered<br>
-  🎯 Fill the tray with 3 identical tiles to clear them · Tray of 7 = Game Over
-</div>
+  #board {
+    position: relative;
+    width: 360px;
+    height: 300px;
+    margin: 10px 0 18px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at center, rgba(255, 255, 255, 0.6), rgba(186, 230, 253, 0.4));
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+      0 20px 50px rgba(14, 116, 144, 0.25),
+      inset 0 0 40px rgba(255, 255, 255, 0.7);
+    overflow: hidden;
+  }
 
-<script>
-const SYMBOLS = ['🍎','🍊','🍋','🍇','🍉','🍓'];
-const TILE = 58;
-const TRAY_MAX = 7;
+  #board::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at center, black 30%, transparent 75%);
+    pointer-events: none;
+  }
 
-let tiles = [];
-let tray = [];
-let gameOver = false;
+  .tile {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #ffffff 0%, #e0f2fe 50%, #7dd3fc 100%);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow:
+      0 10px 24px rgba(14, 116, 144, 0.35),
+      0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+      0 6px 12px rgba(255, 255, 255, 0.8) inset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.25;
+    user-select: none;
+  }
 
-const board = document.getElementById('board');
-const trayEl = document.getElementById('tray');
-const message = document.getElementById('message');
+  .tile:hover {
+    transform: translateY(-6px) scale(1.06);
+    box-shadow:
+      0 18px 32px rgba(14, 116, 144, 0.45),
+      0 0 20px rgba(255, 255, 255, 0.9);
+  }
 
-// 每层牌的位置（故意错开、重叠，制造叠牌感）
-// 第0层（底层）：4列 x 3行
-const LAYER0_POS = [
-  [0,0],[1,0],[2,0],[3,0],
-  [0,1],[1,1],[2,1],[3,1],
-  [0,2],[1,2],[2,2],[3,2]
-];
-// 第1层（上层）：压在底层牌上面，位置偏移一点，制造叠放感
-const LAYER1_POS = [
-  [1,0],[2,0],
-  [0,1],[2,1],
-  [1,2],[2,2]
-];
+  .tile.blocked {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: brightness(0.75) saturate(0.6);
+  }
 
-function initGame(){
-  // 6种牌，每种3张 = 18张
-  let bag = [];
-  SYMBOLS.forEach(s => { for(let i=0;i<3;i++) bag.push(s); });
-  bag.sort(() => Math.random() - 0.5);
+  .tile.removed {
+    transition: all 0.35s cubic-bezier(.2,.7,.3,1);
+    transform: scale(0.2) rotate(180deg);
+    opacity: 0;
+    pointer-events: none;
+  }
 
-  tiles = [];
-  tray = [];
-  gameOver = false;
-  message.textContent = '';
-  message.className = '';
+  #tray {
+    display: flex;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 22px;
+    min-height: 72px;
+    margin: 10px 0 14px;
+    box-shadow: 0 12px 30px rgba(14, 116, 144, 0.25);
+    backdrop-filter: blur(8px);
+  }
 
-  let idx = 0;
-  // 底层12张
-  LAYER0_POS.forEach(([c,r]) => {
-    tiles.push({
-      id: idx,
-      symbol: bag[idx++],
-      layer: 0,
-      col: c, row: r,
-      removed: false
-    });
-  });
-  // 上层6张
-  LAYER1_POS.forEach(([c,r]) => {
-    tiles.push({
-      id: idx,
-      symbol: bag[idx++],
-      layer: 1,
-      col: c, row: r,
-      removed: false
-    });
-  });
+  .tray-slot {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 2px dashed rgba(56, 189, 248, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
 
-  render();
-}
+  #message {
+    min-height: 34px;
+    font-size: 22px;
+    margin: 4px 0 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-align: center;
+  }
 
-// 判断牌是否被上层压住（重叠范围超过一半就算压住）
-function isClickable(tile){
-  if(tile.removed) return false;
-  for(let other of tiles){
-    if(other.removed) continue;
-    if(other.layer <= tile.layer) continue;
-    // 上层牌和这张牌位置重叠（同列同行，或相邻）
-    if(Math.abs(other.col - tile.col) <= 0 && Math.abs(other.row - tile.row) <= 0){
-      return false;
+  .win {
+    color: #059669;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 24px rgba(52, 211, 153, 0.8);
+  }
+
+  .lose {
+    color: #dc2626;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 24px rgba(248, 113, 113, 0.8);
+  }
+
+  .controls {
+    display: flex;
+    gap: 14px;
+    margin-top: 4px;
+  }
+
+  button {
+    padding: 14px 30px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 2px;
+    box-shadow: 0 10px 24px rgba(14, 116, 144, 0.45);
+    transition: 0.25s;
+  }
+
+  button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px rgba(14, 116, 144, 0.55);
+  }
+
+  .hint {
+    color: #075985;
+    font-size: 13px;
+    margin-top: 20px;
+    opacity: 0.8;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  #fireworks {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .fw-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: fwFly 1.6s ease-out forwards;
+  }
+
+  @keyframes fwFly {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--fw-x), var(--fw-y)) scale(0.2);
+      opacity: 0;
     }
   }
-  return true;
-}
+</style>
+</head>
 
-function onTileClick(tile){
-  if(gameOver) return;
-  if(!isClickable(tile)) return;
+<body>
+  <h1>🎆 TILE MATCH 🎆</h1>
+  <div class="subtitle">
+    Click bright uncovered tiles → move them to the tray<br>
+    Match 3 identical tiles to clear them. Clear all tiles to win!
+  </div>
 
-  tile.removed = true;
-  tray.push(tile.symbol);
+  <div id="board"></div>
+  <div id="tray"></div>
+  <div id="message"></div>
 
-  // 消除3张相同
-  let count = {};
-  tray.forEach(s => count[s] = (count[s]||0)+1);
-  let kept = {};
-  tray.forEach(s => kept[s] = (kept[s]||0)+1);
-  tray = [];
-  Object.keys(kept).forEach(s => {
-    let n = kept[s];
-    if(n >= 3) n -= 3;
-    for(let i=0;i<n;i++) tray.push(s);
+  <div class="controls">
+    <button id="resetBtn">🔄 NEW GAME</button>
+  </div>
+
+  <div class="hint">
+    ✨ Bright tiles are clickable · Dim tiles are covered by upper tiles<br>
+    🎯 3 matching tiles in the tray will clear automatically · Tray of 7 = Game Over
+  </div>
+
+  <canvas id="fireworks"></canvas>
+
+<script>
+  const SYMBOLS = ['🍎', '🍊', '🍋', '🍇', '🍉', '🍓'];
+  const TILE = 60;
+  const TRAY_MAX = 7;
+
+  let tiles = [];
+  let tray = [];
+  let gameOver = false;
+
+  const board = document.getElementById('board');
+  const trayEl = document.getElementById('tray');
+  const message = document.getElementById('message');
+
+  const LAYER0_POS = [
+    [0, 0], [1, 0], [2, 0], [3, 0],
+    [0, 1], [1, 1], [2, 1], [3, 1],
+    [0, 2], [1, 2], [2, 2], [3, 2]
+  ];
+
+  const LAYER1_POS = [
+    [1, 0], [2, 0],
+    [0, 1], [2, 1],
+    [1, 2], [2, 2]
+  ];
+
+  function initGame() {
+    let bag = [];
+    SYMBOLS.forEach(s => {
+      for (let i = 0; i < 3; i++) bag.push(s);
+    });
+    bag.sort(() => Math.random() - 0.5);
+
+    tiles = [];
+    tray = [];
+    gameOver = false;
+    message.textContent = '';
+    message.className = '';
+
+    let idx = 0;
+
+    LAYER0_POS.forEach(([c, r]) => {
+      tiles.push({
+        id: idx,
+        symbol: bag[idx++],
+        layer: 0,
+        col: c,
+        row: r,
+        removed: false
+      });
+    });
+
+    LAYER1_POS.forEach(([c, r]) => {
+      tiles.push({
+        id: idx,
+        symbol: bag[idx++],
+        layer: 1,
+        col: c,
+        row: r,
+        removed: false
+      });
+    });
+
+    render();
+  }
+
+  function isClickable(tile) {
+    if (tile.removed) return false;
+
+    for (let other of tiles) {
+      if (other.removed) continue;
+      if (other.layer <= tile.layer) continue;
+
+      if (
+        Math.abs(other.col - tile.col) <= 0.25 &&
+        Math.abs(other.row - tile.row) <= 0.25
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function onTileClick(tile) {
+    if (gameOver) return;
+    if (!isClickable(tile)) return;
+
+    tile.removed = true;
+    tray.push(tile.symbol);
+
+    let count = {};
+    tray.forEach(s => count[s] = (count[s] || 0) + 1);
+
+    let kept = {};
+    tray.forEach(s => kept[s] = (kept[s] || 0) + 1);
+
+    tray = [];
+    Object.keys(kept).forEach(s => {
+      let n = kept[s];
+      if (n >= 3) n -= 3;
+      for (let i = 0; i < n; i++) tray.push(s);
+    });
+
+    render();
+    checkWinLose();
+  }
+
+  function checkWinLose() {
+    let remaining = tiles.filter(t => !t.removed).length;
+
+    if (remaining === 0) {
+      message.textContent = '🎉 YOU WIN! FIREWORKS! 🎉';
+      message.className = 'win';
+      gameOver = true;
+      startWinFireworks();
+      return;
+    }
+
+    if (tray.length >= TRAY_MAX) {
+      message.textContent = '💥 GAME OVER! Tray is full!';
+      message.className = 'lose';
+      gameOver = true;
+    }
+  }
+
+  function render() {
+    board.innerHTML = '';
+
+    tiles.forEach(tile => {
+      const el = document.createElement('div');
+      el.className = 'tile';
+
+      let offsetX = tile.layer === 1 ? 7 : 0;
+      let offsetY = tile.layer === 1 ? 7 : 0;
+
+      el.style.left = tile.col * (TILE + 8) + offsetX + 'px';
+      el.style.top = tile.row * (TILE + 8) + offsetY + 'px';
+      el.style.zIndex = tile.layer * 10 + tile.id;
+      el.textContent = tile.symbol;
+
+      if (tile.removed) {
+        el.classList.add('removed');
+      } else if (!isClickable(tile)) {
+        el.classList.add('blocked');
+      }
+
+      el.onclick = () => onTileClick(tile);
+      board.appendChild(el);
+    });
+
+    trayEl.innerHTML = '';
+
+    for (let i = 0; i < TRAY_MAX; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'tray-slot';
+      slot.textContent = tray[i] || '';
+      trayEl.appendChild(slot);
+    }
+  }
+
+
+  function clickFirework(x, y) {
+    const colors = ['#f472b6', '#38bdf8', '#fde047', '#a78bfa', '#4ade80'];
+    const count = 18;
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'fw-particle';
+
+      const angle = (Math.PI * 2 / count) * i;
+      const dist = 60 + Math.random() * 40;
+
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.boxShadow = '0 0 10px ' + p.style.background;
+      p.style.setProperty('--fw-x', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--fw-y', Math.sin(angle) * dist + 'px');
+
+      document.body.appendChild(p);
+
+      setTimeout(() => p.remove(), 1700);
+    }
+  }
+
+  // 胜利全屏烟花
+  function startWinFireworks() {
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+
+    function launch() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.5 + 40;
+      const color = `hsl(${Math.random() * 360}, 90%, 60%)`;
+
+      for (let i = 0; i < 90; i++) {
+        const angle = (Math.PI * 2 / 90) * i;
+        const speed = 3 + Math.random() * 4;
+
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 1,
+          color: color
+        });
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(125, 211, 252, 0.18)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles = particles.filter(p => p.life > 0);
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.04;
+        p.life -= 0.012;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = p.color;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    let launches = 0;
+    const timer = setInterval(() => {
+      launch();
+      launches++;
+      if (launches >= 8) clearInterval(timer);
+    }, 420);
+  }
+
+  document.getElementById('resetBtn').onclick = initGame;
+
+  board.addEventListener('click', (e) => {
+    if (e.target.classList.contains('tile') && !e.target.classList.contains('removed')) {
+      const rect = board.getBoundingClientRect();
+      clickFirework(e.clientX - rect.left, e.clientY - rect.top);
+    }
   });
 
-  render();
-  checkWinLose();
-}
-
-function checkWinLose(){
-  let remaining = tiles.filter(t => !t.removed).length;
-  if(remaining === 0){
-    message.textContent = '🎉 YOU WIN!';
-    message.className = 'win';
-    gameOver = true;
-    return;
-  }
-  if(tray.length >= TRAY_MAX){
-    message.textContent = '💥 GAME OVER! Tray is full!';
-    message.className = 'lose';
-    gameOver = true;
-  }
-}
-
-function render(){
-  board.innerHTML = '';
-  tiles.forEach(tile => {
-    const el = document.createElement('div');
-    el.className = 'tile';
-    // 位置：底层整齐排，上层稍微偏移4px，露出下面牌的边
-    let offsetX = tile.layer === 1 ? 6 : 0;
-    let offsetY = tile.layer === 1 ? 6 : 0;
-    el.style.left = tile.col * (TILE + 6) + offsetX + 'px';
-    el.style.top = tile.row * (TILE + 6) + offsetY + 'px';
-    el.style.zIndex = tile.layer * 10 + tile.id;
-    el.textContent = tile.symbol;
-    if(tile.removed) el.classList.add('removed');
-    else if(!isClickable(tile)) el.classList.add('blocked');
-    el.onclick = () => onTileClick(tile);
-    board.appendChild(el);
-  });
-
-  trayEl.innerHTML = '';
-  for(let i=0;i<TRAY_MAX;i++){
-    const slot = document.createElement('div');
-    slot.className = 'tray-slot';
-    slot.textContent = tray[i] || '';
-    trayEl.appendChild(slot);
-  }
-}
-
-document.getElementById('resetBtn').onclick = initGame;
+  initGame();
+</script>
+</body>
+</html>
+me;
 initGame();
 </script>
 </body>
